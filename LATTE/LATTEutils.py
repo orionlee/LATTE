@@ -3662,6 +3662,63 @@ def nn_ticids(indir, transit_sec, tic):
 #              download the data             #
 # --------------------------------------------
 
+def _get_fits_from_url(fits_url):    
+    from pathlib import Path
+    import re
+    
+    # configuration, to be exposed later
+    to_cache_file = True
+    cache_base_dir = Path(Path.home(), '.lightkurve-cache')
+
+    def _get_cache_filepath(fits_url):
+        if not fits_url.startswith('https://mast.stsci.edu/api/v0.1/Download/file/?uri=mast:TESS/product/'):
+            return None
+
+        filename_match = re.search('[^/]+[.]fits$', fits_url)
+        if filename_match is None:
+            return None
+
+        filename = filename_match[0]
+        obs_name = re.sub('_[a-z]+[.]fits$', '', filename)
+        filepath = Path(cache_base_dir, f"mastDownload/TESS/{obs_name}/{filename}")
+        return filepath
+
+
+    def _do_cache_fits(fits_url, fits_hdu):
+        filepath = _get_cache_filepath(fits_url)
+        if filepath is None:
+            return None
+        if filepath.exists():
+            print(f"Cache a FITS file: ignored, because local version already exists. url: {fits_url}")
+            return None
+        filepath.parent.mkdir(parents=True, exist_ok=True)  # emulate mkdir -p
+        fits_hdu.writeto(filepath, overwrite=False, output_verify='warn')
+        print(f"Cache the FITS file at {filepath}")
+        return filepath
+
+
+    def _do_get_from_url(fits_url):
+        response = requests.get(fits_url)
+        fits_hdu = pf.open(response.url)
+        if to_cache_file:
+            _do_cache_fits(fits_url, fits_hdu)
+        return fits_hdu
+
+    def _do_get_from_cache(fits_url):
+        filepath = _get_cache_filepath(fits_url)
+        if filepath is None or (not filepath.is_file()):  # not in local cache
+            return None
+
+        print(f"Use cached FITS file: {filepath}")
+        return pf.open(filepath)    
+
+    # main logic
+    fits_hdu = _do_get_from_cache(fits_url)
+    if fits_hdu is None:
+        fits_hdu = _do_get_from_url(fits_url)
+    return fits_hdu
+
+
 # The functions to download the actual data
 def download_data(indir,sectors, tic, binfac = 5, test = 'no'):
 
@@ -3849,9 +3906,7 @@ def download_data(indir,sectors, tic, binfac = 5, test = 'no'):
         else:
             try:
                 # use the downlload link to download the file from the server - need an internet connection for this to work
-                response = requests.get(lcfile)
-                # open the file using the response url
-                lchdu  = pf.open(response.url) # this needs to be a URL - not a file
+                lchdu = _get_fits_from_url(lcfile)
             except:
                 failed_sectors.append(int(lcfile.split('-')[1][1:]))
                 continue
@@ -4631,10 +4686,7 @@ def download_data_neighbours(indir, sector, tics, distance, binfac = 5):
 
         print ("Downloading nearest neighbour   {}   of   {}....".format(num + 1, len(dwload_link), end ='' ))
         try:
-            response = requests.get(lcfile)
-
-            # open the file using the response url
-            lchdu  = pf.open(response.url) # this needs to be a URL - not a file
+            lchdu = _get_fits_from_url(lcfile)
             outtics.append(int(lchdu[0].header['TICID']))
 
             #Open and view columns in lightcurve extension
@@ -5227,8 +5279,7 @@ def download_tpf(indir, transit_sec, transit_list, tic, url_list, test = 'no'):
 
     for idx, file in enumerate(dwload_link_tp):
         try:
-            response = requests.get(file)
-            tpf = pf.open(response.url)   # open the file
+            tpf = _get_fits_from_url(file)
 
         except:
             print ("\n !!! This target pixel file is corrupt and cannot be downloaded at this time. Please try again later or a different file. \n")

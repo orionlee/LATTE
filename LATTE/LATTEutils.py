@@ -3275,7 +3275,11 @@ def tp_files(indir):
         else:
             download_sector = "0{}".format(sec)
 
-        target_list = "https://tess.mit.edu/wp-content/uploads/all_targets_S{}_v1.txt".format(download_sector)
+        # new 2-minute cadence target list URL pattern
+        # note: MIT now also host .csv version (URLs ended with .csv instead of .txt), 
+        # so in theory the txt to csv conversion logic can be removed by simply donwloading the csv
+        # MIT's csv has some comments, so it is slighlty different from the processed version below though.
+        target_list = "https://tess.mit.edu/public/target_lists/2m/all_targets_S{}_v1.txt".format(download_sector)
 
         r_target_list = requests.get(target_list) # create HTTP response object
 

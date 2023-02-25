@@ -3662,9 +3662,18 @@ def _get_fits_from_url(fits_url):
     from pathlib import Path
     import re
     
-    # configuration, to be exposed later
-    to_cache_file = True
-    cache_base_dir = Path(Path.home(), '.lightkurve-cache')
+    # Optional cache, defined via environment variables
+    to_cache_file_str = os.environ.get("LATTE_CACHE_FITS", "true")
+    if to_cache_file_str.lower() == "true" or to_cache_file_str == "1":
+        to_cache_file = True
+    else:
+        to_cache_file = False
+        
+    cache_base_dir = os.environ.get("LATTE_CACHE_FITS_DIR", None)
+    if cache_base_dir is None:
+        cache_base_dir = Path(Path.home(), '.lightkurve-cache')  # lightkurve v1.x cache dir
+    else:
+        cache_base_dir = Path(cache_base_dir)
 
     def _get_cache_filepath(fits_url):
         if not fits_url.startswith('https://mast.stsci.edu/api/v0.1/Download/file/?uri=mast:TESS/product/'):

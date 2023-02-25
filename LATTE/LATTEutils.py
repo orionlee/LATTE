@@ -5413,7 +5413,7 @@ def download_tpf(indir, transit_sec, transit_list, tic, url_list, test = 'no'):
 
                 tpf_filt = X4.reshape(tpf[1].data['FLUX'][lkeep,:,:].shape)
 
-                oot = (abs(T0-t) < 0.3) * (abs(T0-t) < 0.3)
+                oot = (abs(T0-t) < 0.5) * (abs(T0-t) > 0.3)
                 intr = abs(T0-t) < 0.1
 
                 X1_list.append(X1) # not corrected
@@ -5839,7 +5839,7 @@ def download_tpf_mast(indir, transit_sec, transit_list, tic, test = 'no'):
                 tpf_filt = X4.reshape(tpf[1].data['FLUX'][lkeep,:,:].shape)
 
 
-                oot = (abs(T0-t) < 1.5) * (abs(T0-t) < 1.5)
+                oot = (abs(T0-t) < 0.5) * (abs(T0-t) > 0.3)
                 intr = abs(T0-t) < 0.1
 
                 X1_list.append(X1) # not corrected
@@ -7745,7 +7745,7 @@ def plot_in_out_TPF(tic, indir, X4_list, oot_list, t_list, intr_list, T0_list, t
         tpf_filt  =  tpf_filt_list[idx]  # the filtered target pixel files
 
         intr = abs(T0-t) < 0.25  # create a mask of the in transit times
-        oot = (abs(T0-t) < 0.5) * (abs(T0-t) < 0.3)  # create a mask of the out of transit times
+        oot = (abs(T0-t) < 0.5) * (abs(T0-t) > 0.3)  # create a mask of the out of transit times
         img_intr = tpf_filt[intr,:,:].sum(axis=0)/float(intr.sum()) # apply the masks and normalize the flux
         img_oot = tpf_filt[oot,:,:].sum(axis=0)/float(oot.sum())
         img_diff = img_oot-img_intr # calculate the diffefence image (out of transit minus in-transit)
@@ -7851,7 +7851,7 @@ def plot_in_out_TPF_proj(tic, indir, X4_list, oot_list, t_list, intr_list, T0_li
         array, footprint = reproject_interp(tup, wcs_out, shape_out = shape_out, order = 'nearest-neighbor')
 
         intr = abs(T0-t) < 0.25 # create a mask of the in transit times
-        oot = (abs(T0-t) < 0.5) * (abs(T0-t) < 0.3) # the in-transit flux mask
+        oot = (abs(T0-t) < 0.5) * (abs(T0-t) > 0.3) # the out-of-transit flux mask
         img_intr = tpf_filt[intr,:,:].sum(axis=0)/float(intr.sum())  # array of the time of the transit-like event
         img_oot = tpf_filt[oot,:,:].sum(axis=0)/float(oot.sum())     # array
         img_diff = img_oot-img_intr                                  # array of the diffefence image (out of transit minus in-transit)

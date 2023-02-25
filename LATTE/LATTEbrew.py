@@ -731,7 +731,7 @@ def brew_LATTE_FFI(tic, indir, syspath, transit_list, simple, BLS, model, save, 
 			# Note: this will NOT be 'perfect' for all events, as it depends on the transit duration which the code doesnt' know at this time but it's a good approximation.
 			if (T0 > np.nanmin(t)) and (T0 < np.nanmax(t)): # if T0 is within the time... (should be)
 
-				oot_list.append((abs(T0-np.array(t)) < 0.55) * (abs(T0-np.array(t)) < 0.3))
+				oot_list.append((abs(T0-np.array(t)) < 0.5) * (abs(T0-np.array(t)) > 0.3))
 				intr_list.append(abs(T0-np.array(t)) < 0.1)
 
 				X1_list_n.append(X1_list[idx])

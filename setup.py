@@ -30,15 +30,15 @@ setup(
     "seaborn", 
     "requests", 
     "lightkurve > 1.2.0", 
-    "matplotlib == 3.2.0",
+    "matplotlib >= 3.2.0",
     "astroplan",
     "astroquery",
-    "sklearn", 
+    "scikit-learn",   # to make pip install -e . work in python 3.9
     "scipy", 
     "tess-point", 
     "reproject > 0.7", 
     "reportlab", 
-    "astropy <= 4.0",
+    "astropy >= 4.0",
     "mock > 2.0.0"],
     entry_points={
         "console_scripts": [

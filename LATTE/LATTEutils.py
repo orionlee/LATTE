@@ -22,7 +22,8 @@ import astropy.io.fits as pf
 from astropy import units as u
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
-from astropy.stats import median_absolute_deviation, BoxLeastSquares
+from astropy.stats import median_absolute_deviation
+from astropy.timeseries import BoxLeastSquares
 
 from scipy.ndimage import label
 from scipy.interpolate import interp1d
@@ -6923,7 +6924,7 @@ def plot_pixel_level_LC(tic, indir, X1_list, X4_list, oot_list, intr_list, bkg_l
 
             for j in range(0,arrshape[2]):
 
-                apmask = np.zeros(arrshape[1:], dtype=np.int)
+                apmask = np.zeros(arrshape[1:], dtype=int)
                 apmask[i,j] = 1
                 apmask = apmask.astype(bool)
 

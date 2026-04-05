@@ -3271,10 +3271,7 @@ def tp_files(indir):
 
     for sec in range(first_sec+1,500):  # how many tess sectors will there be in total?
 
-        if sec < 10:
-            download_sector = "00{}".format(sec)
-        else:
-            download_sector = "0{}".format(sec)
+        download_sector = f"{sec:03}"  # zero-padded to 3 digits
 
         # new 2-minute cadence target list URL pattern
         # note: MIT now also host .csv version (URLs ended with .csv instead of .txt), 
@@ -3466,10 +3463,7 @@ def momentum_dumps_info(indir):
     for sec in range(first_sec+1,500): # a large number - how many TESS sectors will there be?
 
         try:
-            if sec < 10:
-                download_sector = "00{}".format(sec)
-            else:
-                download_sector = "0{}".format(sec)
+            download_sector = f"{sec:03}"  # zero-padded to 3 digits
 
             # load the data file of the sector that the first marked transit appears in
             # sort the list to be ordered by camera, RA and then Dec
@@ -3607,10 +3601,7 @@ def nn_ticids(indir, transit_sec, tic):
 
     neighbours_sector = transit_sec[0]
 
-    if neighbours_sector < 10:
-        download_sector = "00{}".format(neighbours_sector)
-    else:
-        download_sector = "0{}".format(neighbours_sector)
+    download_sector = f"{neighbours_sector:03}"  # zero-padded to 3 digits
 
     # load the data file of the sector that the first marked transit appears in
     # sort the list to be ordered by camera, RA and then Dec
